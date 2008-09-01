@@ -1,0 +1,219 @@
+<html>
+	<head>
+		<title>Stack bar example</title>
+		<link href="layout.css" rel="stylesheet" type="text/css"></link>
+		<!--[if IE]><script language="javascript" type="text/javascript" src="../excanvas.pack-min.js"></script><![endif]-->
+		<script language="javascript" type="text/javascript" src="../jquery-min.js"></script>
+		<script language="javascript" type="text/javascript" src="../jquery.flot.js"></script>
+        <script language="javascript" type="text/javascript" src="test.js"></script>
+        <style type="text/css">
+        #info	{	
+        			font-size: 11px; background-color: #000; color: #fff; 
+					-webkit-border-radius: 7px; 
+					-moz-border-radius: 7px; 
+					padding: 10px; 
+					opacity: 0.8; 
+					top: 40%; left: 35%; 
+				}
+		.moreLegends {
+						text-decoration: underline
+					}		
+        </style>
+	</head>
+	
+	<body>	
+	    <h3>Flot Examples</h3>			
+		<div>Stack bars with mouseover. Also allow customize grid color with dual yaxis and hide legends.</div>
+		<br>
+		<div id="info" style="display:none"></div>
+		<div id="content_area_graph" style="width:800px; height:360px;"></div>
+
+        <script id="source" language="javascript" type="text/javascript">
+        
+       $(function () {
+		 		var ratio = 8;
+		 		var mulitpler = 1000000;
+		        var datasets = [
+		                    {'label':'Gross Spring','data':[[-0.25,643916041/mulitpler,{'type':'Gross Sales','date':'2002 Spring','value':{'value':'643916041'}}]],'color': 'rgba(10,50,255,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(10,50,255,0.5)'}},
+		                    {'label':'Summer','data':[[-0.25,820965194/mulitpler,{'type':'Gross Sales','date':'2002 Summer','value':{'value':'820965194'}}]], 'color': 'rgba(10,80,255,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(10,80,255,0.5)'}},
+		                    {'label':'Fall','data':[[-0.25,807465661/mulitpler,{'type':'Gross Sales','date':'2002 Fall','value':{'value':'807465661'}}]], 'color': 'rgba(10, 130, 255,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(10, 130, 255,0.5)'}},
+		                    {'label':'Winter','data':[[-0.25,761209699/mulitpler,{'type':'Gross Sales','date':'2002 Winter','value':{'value':'761209699'}}]], 'color': 'rgba(10, 160, 255,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(10, 160, 255,0.5)'}},
+							{'label':'Sales Spring','data':[[0,64391604/mulitpler*ratio,{'type':'Net Sales','date':'2002 Spring','value':{'value':'64391604'}}]], 'color': 'rgba(255, 50, 80,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(255, 50, 80,0.5)'}},
+		                    {'label':'Summer','data':[[0,82096519/mulitpler*ratio,{'type':'Net Sales','date':'2002 Summer','value':{'value':'82096519'}}]], 'color': 'rgba(255, 80, 100,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(255, 80, 100,0.5)'}},
+		                    {'label':'Fall','data':[[0,80746566/mulitpler*ratio,{'type':'Net Sales','date':'2002 Fall','value':{'value':'80746566'}}]], 'color': 'rgba(255, 110, 130,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(255, 110, 130,0.5)'}},
+		                    {'label':'Winter','data':[[0,76120969/mulitpler*ratio,{'type':'Net Sales','date':'2002 Winter','value':{'value':'76120969'}}]], 'color': 'rgba(255, 189, 189,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(255, 189, 189,0.5)'}},
+		                    
+		                    {'data':[[0.75,670287079/mulitpler,{'type':'Gross Sales','date':'2003 Spring','value':{'value':'670287079'}}]], 'color': 'rgba(10,50,255,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(10,50,255,0.5)'}},
+		                    {'data':[[0.75,894473378/mulitpler,{'type':'Gross Sales','date':'2003 Summer','value':{'value':'894473378'}}]], 'color': 'rgba(10,80,255,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(10,80,255,0.5)'}},
+		                    {'data':[[0.75,802299426/mulitpler,{'type':'Gross Sales','date':'2003 Fall','value':{'value':'802299426'}}]], 'color': 'rgba(10, 130, 255,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(10, 130, 255,0.5)'}},
+		                    {'data':[[0.75,775694374/mulitpler,{'type':'Gross Sales','date':'2003 Winter','value':{'value':'775694374'}}]], 'color': 'rgba(10, 160, 255,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(10, 160, 255,0.5)'}},
+							{'data':[[1,67028707/mulitpler*ratio,{'type':'Net Sales','date':'2003 Spring','value':{'value':'67028707'}}]], 'color': 'rgba(255, 50, 80,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(255, 50, 80,0.5)'}},
+		                    {'data':[[1,89447337/mulitpler*ratio,{'type':'Net Sales','date':'2003 Summer','value':{'value':'89447337'}}]], 'color': 'rgba(255, 80, 100,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(255, 80, 100,0.5)'}},
+		                    {'data':[[1,80229942/mulitpler*ratio,{'type':'Net Sales','date':'2003 Fall','value':{'value':'80229942'}}]], 'color': 'rgba(255, 110, 130,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(255, 110, 130,0.5)'}},
+		                    {'data':[[1,77569437/mulitpler*ratio,{'type':'Net Sales','date':'2003 Winter','value':{'value':'77569437'}}]], 'color': 'rgba(255, 189, 189,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(255, 189, 189,0.5)'}},
+		                    
+		                    {'data':[[1.75,572110382/mulitpler,{'type':'Gross Sales','date':'2004 Spring','value':{'value':'572110382'}}]], 'color': 'rgba(10,50,255,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(10,50,255,0.5)'}},
+		                    {'data':[[1.75,693156073/mulitpler,{'type':'Gross Sales','date':'2004 Summer','value':{'value':'693156073'}}]], 'color': 'rgba(10,80,255,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(10,80,255,0.5)'}},
+		              	    {'data':[[1.75,483035767/mulitpler,{'type':'Gross Sales','date':'2004 Fall','value':{'value':'483035767'}}]], 'color': 'rgba(10, 130, 255,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(10, 130, 255,0.5)'}},
+		                    {'data':[[1.75,82312051/mulitpler,{'type':'Gross Sales','date':'2004 Winter','value':{'value':'82312051'}}]], 'color': 'rgba(10, 160, 255,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(10, 160, 255,0.5)'}},
+							{'data':[[2,52110382/mulitpler*ratio,{'type':'Net Sales','date':'2004 Spring','value':{'value':'52110382'}}]], 'color': 'rgba(255, 50, 80,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(255, 50, 80,0.5)'}},
+		                    {'data':[[2,43156073/mulitpler*ratio,{'type':'Net Sales','date':'2004 Summer','value':{'value':'43156073'}}]], 'color': 'rgba(255, 80, 100,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(255, 80, 100,0.5)'}},
+		                    {'data':[[2,13035767/mulitpler*ratio,{'type':'Net Sales','date':'2004 Fall','value':{'value':'13035767'}}]], 'color': 'rgba(255, 110, 130,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(255, 110, 130,0.5)'}},
+		                    {'data':[[2,-12312051/mulitpler*ratio,{'type':'Net Sales','date':'2004 Winter','value':{'value':'-12312051'}}]], 'color': 'rgba(255, 189, 189,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(255, 189, 189,0.5)'}},
+		                    
+		                    {'data':[[2.75,52312050/mulitpler,{'type':'Gross Sales','date':'2005 Spring','value':{'value':'52312050'}}]], 'color': 'rgba(10,50,255,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(10,50,255,0.5)'}},
+		                    {'data':[[2.75,42313366/mulitpler,{'type':'Gross Sales','date':'2005 Summer','value':{'value':'42313366'}}]], 'color': 'rgba(10,80,255,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(10,80,255,0.5)'}},
+		                    {'data':[[2.75,33314589/mulitpler,{'type':'Gross Sales','date':'2005 Fall','value':{'value':'33314589'}}]], 'color': 'rgba(10, 130, 255,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(10, 130, 255,0.5)'}},
+		                    {'data':[[2.75,503473388/mulitpler,{'type':'Gross Sales','date':'2005 Winter','value':{'value':'503473388'}}]], 'color': 'rgba(10, 160, 255,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(10, 160, 255,0.5)'}},
+							{'data':[[3,-42312050/mulitpler*ratio,{'type':'Net Sales','date':'2005 Spring','value':{'value':'-42312050'}}]], 'color': 'rgba(255, 50, 80,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(255, 50, 80,0.5)'}},
+		                    {'data':[[3,-52313366/mulitpler*ratio,{'type':'Net Sales','date':'2005 Summer','value':{'value':'-52313366'}}]], 'color': 'rgba(255, 80, 100,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(255, 80, 100,0.5)'}},
+		                    {'data':[[3,-60359822/mulitpler*ratio,{'type':'Net Sales','date':'2005 Fall','value':{'value':'-60359822'}}]], 'color': 'rgba(255, 110, 130,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(255, 110, 130,0.5)'}},
+		                    {'data':[[3,42131355/mulitpler*ratio,{'type':'Net Sales','date':'2005 Winter','value':{'value':'42131355'}}]], 'color': 'rgba(255, 189, 189,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(255, 189, 189,0.5)'}},
+		                    
+		                    {'data':[[3.75,650465131/mulitpler,{'type':'Gross Sales','date':'2006 Spring','value':{'value':'650465131'}}]], 'color': 'rgba(10,50,255,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(10,50,255,0.5)'}},
+		                    {'data':[[3.75,842252321/mulitpler,{'type':'Gross Sales','date':'2006 Summer','value':{'value':'842252321'}}]], 'color': 'rgba(10,80,255,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(10,80,255,0.5)'}},
+		                    {'data':[[3.75,1565932602/mulitpler,{'type':'Gross Sales','date':'2006 Fall','value':{'value':'1565932602'}}]], 'color': 'rgba(10, 130, 255,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(10, 130, 255,0.5)'}},
+		                    {'data':[[3.75,1043652655/mulitpler,{'type':'Gross Sales','date':'2006 Winter','value':{'value':'1043652655'}}]], 'color': 'rgba(10, 160, 255,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(10, 160, 255,0.5)'}},
+							{'data':[[4,55046510/mulitpler*ratio,{'type':'Net Sales','date':'2006 Spring','value':{'value':'55046510'}}]], 'color': 'rgba(255, 50, 80,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(255, 50, 80,0.5)'}},
+		                    {'data':[[4,70316516/mulitpler*ratio,{'type':'Net Sales','date':'2006 Summer','value':{'value':'70316516'}}]], 'color': 'rgba(255, 80, 100,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(255, 80, 100,0.5)'}},
+		                    {'data':[[4,100293260/mulitpler*ratio,{'type':'Net Sales','date':'2006 Fall','value':{'value':'100293260'}}]], 'color': 'rgba(255, 110, 130,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(255, 110, 130,0.5)'}},
+		                    {'data':[[4,-64347338/mulitpler*ratio,{'type':'Net Sales','date':'2006 Winter','value':{'value':'-64347338'}}]], 'color': 'rgba(255, 189, 189,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(255, 189, 189,0.5)'}},					
+							
+		                    {'data':[[4.75,1243652655/mulitpler,{'type':'Gross Sales','date':'2007 Spring','value':{'value':'1243652655'}}]], 'color': 'rgba(10,50,255,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(10,50,255,0.5)'}},
+		                    {'data':[[4.75,1212859885/mulitpler,{'type':'Gross Sales','date':'2007 Summer','value':{'value':'1212859885'}}]], 'color': 'rgba(10,80,255,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(10,80,255,0.5)'}},
+		                    {'data':[[4.75,702932602/mulitpler,{'type':'Gross Sales','date':'2007 Fall','value':{'value':'702932602'}}]], 'color': 'rgba(10, 130, 255,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(10, 130, 255,0.5)'}},
+		                    {'data':[[4.75,1512451652/mulitpler,{'type':'Gross Sales','date':'2007 Winter','value':{'value':'1512451652'}}]], 'color': 'rgba(10, 160, 255,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(10, 160, 255,0.5)'}},
+		                    {'data':[[5,65210382/mulitpler*ratio,{'type':'Net Sales','date':'2007 Spring','value':{'value':'65210382'}}]], 'color': 'rgba(255, 50, 80,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(255, 50, 80,0.5)'}},
+		                    {'data':[[5,73154586/mulitpler*ratio,{'type':'Net Sales','date':'2007 Summer','value':{'value':'73154586'}}]], 'color': 'rgba(255, 80, 100,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(255, 80, 100,0.5)'}},
+		                    {'data':[[5,13035787/mulitpler*ratio,{'type':'Net Sales','date':'2007 Fall','value':{'value':'13035787'}}]], 'color': 'rgba(255, 110, 130,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(255, 110, 130,0.5)'}},
+		                    {'data':[[5,22312695/mulitpler*ratio,{'type':'Net Sales','date':'2007 Winter','value':{'value':'22312695'}}]], 'color': 'rgba(255, 189, 189,0.5)', 'bars' : {show:true, 'fillColor': 'rgba(255, 189, 189,0.5)'}},
+		                   ];
+		        var xaxis_data = ['2002','2003','2004','2005','2006','2007'];
+				var options = {
+				                    bars: 
+				                    {
+				                        show: true,
+				                        lineWidth:0.1,
+				                        barWidth:0.25,
+				                        stackBar:true,
+				                        topBottomStyle: {'left':0	, 'top':10}
+				                    },
+				                    lines:
+				                    {
+				                    	 show: true
+				                    },
+									yaxis: 
+						            {	
+						              	noTicks: 15,
+						              	minMargin: 1,
+						              	maxMargin: 1.3,
+						              	tickFormatter: function(val, axis) 
+						                       		   {
+						                        			return '<span style="color:#1c80fe">' + Math.round(val) + '</span>/<span style="color:#dc1634">' + Math.round(val/ratio) + '</span>';
+						                        	   }
+						            },
+				                    xaxis: {
+				                    	showGrid: false,
+				                    	tickFormatter: function(val)
+		                    					{
+		                    						if (xaxis_data[val])
+		                    							return xaxis_data[val];
+		                    						return '';
+		                    					}     
+				                    },
+				                    grid: 
+				                    {
+				                        triggerOnMouseOver: true,
+				                        mouseEventOnBar:true,
+				                        tickColor: "#F6F6F6",
+										backgroundColor: "#F6F6F6",				
+										coloredAreas: function (areas, xticks, yticks)
+													  {
+															var tickSize = Math.abs(yticks[0].v - yticks[1].v);
+															var xaxisLength = areas.xmax - areas.xmin;
+															var tickbar = 0;
+															var gridColoredAreas = [];
+															
+															for(var i = 0; i < Math.abs(Math.ceil(areas.ymin)/tickSize); i=i+2)
+															{
+																coloredArea = new Object;
+																coloredArea.y1 = parseFloat(tickbar);
+																tickbar = parseFloat(tickbar - tickSize);
+																coloredArea.y2 = parseFloat(tickbar);
+																tickbar = parseFloat(tickbar - tickSize);
+																coloredArea.color = '#DFDFDF';
+																gridColoredAreas.push(coloredArea);
+															}
+															
+															tickbar = tickSize;
+															for(var i = 0; i < Math.ceil(areas.ymax)/tickSize; i=i+2)	
+															{
+																coloredArea = new Object;
+																coloredArea.y1 = parseFloat(tickbar);
+																tickbar = parseFloat(tickbar + tickSize);
+																coloredArea.y2 = parseFloat(tickbar);
+																tickbar = parseFloat(tickbar + tickSize);
+																coloredArea.color = '#DFDFDF';
+																gridColoredAreas.push(coloredArea);
+															}
+															return gridColoredAreas;
+													  }
+				                    },
+				                    legend: 
+				                    {
+				                        show: true,
+				                        noColumns: 4,
+				                        hideExtra: true,
+				                    }
+				              };
+		        $.plot(
+		                $("#content_area_graph"), 
+		                datasets, 
+		                options
+		            );
+		      $("#content_area_graph").bind("plotmousemove", mouseOverOnBarFunction);
+		      $("#content_area_graph").bind("plotmouseout", function(e){ $("#info").hide(); });
+		      
+			 
+			function mouseOverOnBarFunction (e, pos, ev) { 
+			    selectedItem = pos.selectedItem ? pos.selectedItem[2] : null;	
+				$("#info").hide();
+		
+				if (selectedItem !=null)
+				{
+					infoText = '<span style="white-space: nowrap;"><b>' + selectedItem.type + '</b><br/>';
+					infoText += selectedItem.date + '<br/>';
+					infoText += 'Value : RM '+ addCommas(selectedItem.value['value']) + '<br/>';
+					infoText += '</span>';
+					$("#info").html( infoText );
+					$("#info").css('position','absolute');
+					var padding = 20;
+					var left = ev.clientX + ev.view.scrollX + padding;
+					if (left >= ev.view.innerWidth - $("#info").width() - padding*2)
+						left = left - $("#info").width() - padding*4;
+					$("#info").css('left',left);
+					$("#info").css('top', ev.clientY + ev.view.scrollY + padding);
+					$("#info").css('z-index',100);
+					
+					$("#info").show();
+				}
+				else
+					$("#info").empty();
+			}
+			
+			function addCommas(nStr)
+			{
+				nStr += '';
+				x = nStr.split('.');
+				x1 = x[0];
+				x2 = x.length > 1 ? '.' + x[1] : '';
+				var rgx = /(\d+)(\d{3})/;
+				while (rgx.test(x1)) {
+					x1 = x1.replace(rgx, '$1' + ',' + '$2');
+				}
+				return x1 + x2;
+			}
+		});
+        </script>
+	</body>
+</html>
