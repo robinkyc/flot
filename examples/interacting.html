@@ -5,51 +5,67 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Flot Examples</title>
     <link href="interacting_files/layout.css" rel="stylesheet" type="text/css">
-    <!--[if IE]><script language="javascript" type="text/javascript" src="../excanvas.pack.js"></script><![endif]-->
-    <script language="javascript" type="text/javascript" src="../jquery.js"></script>
+    <!--[if IE]><script language="javascript" type="text/javascript" src="excanvas.pack.js"></script><![endif]-->
+    <script language="javascript" type="text/javascript" src="../jquery-min.js"></script>
     <script language="javascript" type="text/javascript" src="../jquery.flot.js"></script>
  </head><body>
     <h1>Flot Examples</h1>
 
-    <div id="placeholder" style="width: 600px; height: 300px;"></div>
+    <div id="placeholder" style="width: 600px; height: 300px; position: relative;"><canvas width="600" height="300"></canvas><canvas style="position: absolute; left: 0px; top: 0px;" width="600" height="300"></canvas><div class="tickLabels" style="font-size: smaller; color: rgb(84, 84, 84);"><div style="position: absolute; top: 279px; left: -15px; width: 94px; text-align: center;" class="tickLabel">0</div><div style="position: absolute; top: 279px; left: 68.5556px; width: 94px; text-align: center;" class="tickLabel">2</div><div style="position: absolute; top: 279px; left: 152.111px; width: 94px; text-align: center;" class="tickLabel">4</div><div style="position: absolute; top: 279px; left: 235.667px; width: 94px; text-align: center;" class="tickLabel">6</div><div style="position: absolute; top: 279px; left: 319.222px; width: 94px; text-align: center;" class="tickLabel">8</div><div style="position: absolute; top: 279px; left: 402.778px; width: 94px; text-align: center;" class="tickLabel">10</div><div style="position: absolute; top: 279px; left: 486.333px; width: 94px; text-align: center;" class="tickLabel">12</div><div style="position: absolute; top: 267.5px; left: 0pt; width: 25px; text-align: right;" class="tickLabel">-1.5</div><div style="position: absolute; top: 213.974px; left: 0pt; width: 25px; text-align: right;" class="tickLabel">-1.0</div><div style="position: absolute; top: 160.447px; left: 0pt; width: 25px; text-align: right;" class="tickLabel">-0.5</div><div style="position: absolute; top: 106.921px; left: 0pt; width: 25px; text-align: right;" class="tickLabel">0.0</div><div style="position: absolute; top: 53.3942px; left: 0pt; width: 25px; text-align: right;" class="tickLabel">0.5</div><div style="position: absolute; top: -0.132263px; left: 0pt; width: 25px; text-align: right;" class="tickLabel">1.0</div></div></div>
+    <div id="info" style="display:none"></div>
+    <p>Flot supports user interactions. It's currently still a bit
+    primitive, but you can enable the user to click on the plot and
+    get the corresponding x and y values back.</p>
 
-    <p>Try hovering or clicking on the plot above. <span id="result"></span></p>
+    <p>Try clicking on the plot above. <span id="result"></span></p>
 
 <script id="source" language="javascript" type="text/javascript">
 $(function () {
     var d1 = [];
     for (var i = 0; i < 14; i += 0.5)
-        d1.push([i, Math.sin(i)]);
+        d1.push([i, Math.sin(i), "point A"+i*2]); // Use an optional third parameter to store any additional info
 
     var d2 = [];
     for (var i = 0; i < 14; i += 0.5)
-        d2.push([i, Math.cos(i)]);
+        d2.push([i, Math.cos(i), "point B"+i*2]); // Use an optional third parameter to store any additional info
 
-    plot = $.plot($("#placeholder"), [ { data: d1, label: "Yellow" },
-                                       { data: d2, label: "Blue" } ], { 
-        hints: { show: true },
+    plot = $.plot($("#placeholder"), [ d1, d2 ], { 
         points: { show: true }, 
         lines: { show: true },
-        legend: { position: 'sw' },
-        grid: { 
-          clickable: true,
-          hoverable: true,
-          hoverFill: '#444',
-          hoverRadius: 5
-        }
+        grid: { clickable: true, mouseCatchingArea: 30, triggerOnMouseOver: true }
     });
 
     $("#placeholder").bind("plotclick", function (e, pos) {
-        if (!pos.selected) { return; }
-        plot.highlightSelected( pos.selected );
-        x = pos.selected.x.toFixed(2);
-        y = pos.selected.y.toFixed(2);
-        $("#result").text('You clicked on (' + x +  ', ' + y + ')');
+        // the values are in pos.x and pos.y
+        $("#result").text('You clicked on (' + pos.x.toFixed(2) +  ', ' + pos.y.toFixed(2) + ')');
+        if ( pos.selectedItem )	// Clicked over a data point
+            $("#result").text('You clicked on '+pos.selectedItem[2]);
     });
 
-    $("#placeholder").bind("plotmousemove", function (e, pos) {
-        if (!pos.selected) { return; }
-        plot.highlightSelected( pos.selected );
+    lastSelectedItem = null;
+    $("#placeholder").bind("plotmousemove", function (e, pos, ev) {
+        if ( pos.selectedItem!=lastSelectedItem ) {     // Avoid unnecessary refreshing (optional)
+            plot.setData( [d1, d2, [pos.selectedItem]] );
+            plot.draw();
+            console.log(pos.selectedItem);
+            lastSelectedItem = pos.selectedItem;
+            if (lastSelectedItem)
+            {
+                infoText = '<span style="white-space: nowrap;"><b>' + lastSelectedItem[2] + '</b><br/>';
+					    infoText += '</span>';
+					    $("#info").html( infoText );
+					    $("#info").css('position','absolute');
+					    var padding = 20;
+					    var left = ev.clientX + ev.view.scrollX + padding;
+					    if (left >= ev.view.innerWidth - $("#info").width() - padding*2)
+						    left = left - $("#info").width() - padding*4;
+					    $("#info").css('left',left);
+					    $("#info").css('top', ev.clientY + ev.view.scrollY + padding);
+					    $("#info").css('z-index',100);
+					
+					    $("#info").show();
+            }
+        }
     });
 });
 </script>

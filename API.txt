@@ -28,7 +28,7 @@ The data is an array of data series:
   [ series1, series2, ... ]
 
 A series can either be raw data or an object with properties. The raw
-data format is an array of points*:
+data format is an array of points:
 
   [ [x1, y1], [x2, y2], ... ]
 
@@ -57,7 +57,6 @@ The format of a single series object is as follows:
     lines: specific lines options,
     bars: specific bars options,
     points: specific points options,
-    hints: specific hints options,
     shadowSize: number
   }
 
@@ -92,11 +91,6 @@ Here's a complete example of a simple data specification:
   [ { label: "Foo", data: [ [10, 1], [17, -14], [30, 5] ] },
     { label: "Bar", data: [ [11, 13], [19, 11], [30, -7] ] } ]
 
-
-*: If the data series has 'deltas' enabled then you must not only
-   specify the x and y points of the data but also the delta to be used
-   for this data point, eg. [x,y,d] rather than [x,y] (see section
-   below on delta series'.
 
 Plot Options
 ------------
@@ -154,14 +148,10 @@ Customizing the axes
 ====================
 
   xaxis, yaxis: {
-    label: null or string
     mode: null or "time"
     min: null or number
     max: null or number
     autoscaleMargin: null or number
-    labelWidth: null or number
-    labelHeight: null or number
-
     ticks: null or number or ticks array or (fn: range -> ticks array)
     tickSize: number or array
     minTickSize: number or array
@@ -172,9 +162,6 @@ Customizing the axes
 The two axes have the same kind of options. The "mode" option
 determines how the data is interpreted, the default of null means as
 decimal numbers. Use "time" for time series data, see the next section.
-
-The "label" option will set an axis label for the specified axis. The
-y-axis uses SVG for browsers that support it and alternate means otherwise.
 
 The options "min"/"max" are the precise minimum/maximum value on the
 scale. If you don't specify either of them, a value will automatically
@@ -187,10 +174,6 @@ when a min or max value is not explicitly set. If a margin is
 specified, the plot will furthermore extend the axis end-point to the
 nearest whole tick. The default value is "null" for the x axis and
 0.02 for the y axis which seems appropriate for most cases.
-
-"labelWidth" and "labelHeight" specifies the maximum size of the tick
-labels in pixels. They're useful in case you need to align several
-plots.
 
 The rest of the options deal with the ticks.
 
@@ -270,45 +253,20 @@ an example of a custom formatter:
 Time series data
 ================
 
-Time series are a bit more difficult than scalar data because
-calendars don't follow a simple base 10 system. For many cases, Flot
-abstracts most of this away, but it can still be a bit difficult to
-get the data into Flot. So we'll first discuss the data format.
-
 The time series support in Flot is based on Javascript timestamps,
 i.e. everywhere a time value is expected or handed over, a Javascript
-timestamp number is used. This is a number, not a Date object. A
+timestamp number is used. This is not the same as a Date object. A
 Javascript timestamp is the number of milliseconds since January 1,
 1970 00:00:00. This is almost the same as Unix timestamps, except it's
 in milliseconds, so remember to multiply by 1000!
 
-You can see a timestamp like this
+You can see a timestamp by outputting
 
-  alert((new Date()).getTime())
-
-Normally you want the timestamps to be displayed according to a
-certain time zone, usually the time zone in which the data has been
-produced. However, Flot always displays timestamps according to UTC.
-It has to as the only alternative with core Javascript is to interpret
-the timestamps according to the time zone that the visitor is in,
-which means that the ticks will shift unpredictably with the time
-zone and daylight savings of each visitor.
-
-So given that there's no good support for custom time zones in
-Javascript, you'll have to take care of this server-side.
-
-The easiest way to think about it is to pretend that the data
-production time zone is UTC, even if it isn't. So if you have a
-datapoint at 2002-02-20 08:00, you can generate a timestamp for eight
-o'clock UTC even if it really happened eight o'clock UTC+0200. If
-you've already got the real UTC timestamp, it's too late to pretend -
-but you can fix it up by adding the time zone offset, e.g. for
-UTC+0200 you would add 2 hours to the timestamp. Then it'll look right
-on the plot.
+  (new Date()).getTime()
 
 In PHP you can get an appropriate timestamp with
-'strtotime("2002-02-20 UTC") * 1000', in Python with
-'calendar.timegm(datetime_object.timetuple()) * 1000', in .NET with
+'strtotime("2002-02-20") * 1000', in Python with
+'time.mktime(datetime_object.timetuple()) * 1000', in .NET with
 something like:
 
   public static int GetJavascriptTimestamp(System.DateTime input)
@@ -318,17 +276,13 @@ something like:
     return (int)(time.Ticks / 10000);
   }
 
-Javascript also has some support for parsing date strings, so it is
-possible to generate the timestamps client-side if you need to.
-  
 Once you've got the timestamps into the data and specified "time" as
 the axis mode, Flot will automatically generate relevant ticks and
-format them. As always, you can tweak the ticks via the "ticks" option
-- just remember that the values should be timestamps, not Date
-objects.
+format them. As always, you can tweak the ticks via the "ticks"
+option. Again the values should be timestamps, not Date objects!
 
-Tick generation and formatting can also be controlled separately
-through the following axis options:
+Tick generation and formatting is controlled separately through the
+following axis options:
 
   xaxis, yaxis: {
     minTickSize
@@ -367,7 +321,7 @@ which will format December 24 as 24/12:
 
   tickFormatter: function (val, axis) {
     var d = new Date(val);
-    return d.getUTCDate() + "/" + (d.getUTCMonth() + 1);
+    return d.getDate() + "/" + (d.getMonth() + 1);
   }
 
 Note that for the time mode "tickSize" and "minTickSize" are a bit
@@ -387,10 +341,10 @@ Customizing the data series
 ===========================
 
   lines, points, bars: {
-    show: boolean
-    lineWidth: number
-    fill: boolean or number
-    fillColor: color
+    show: boolean,
+    lineWidth: number,
+    fill: boolean,
+    fillColor: color or null
   }
 
   points: {
@@ -399,23 +353,6 @@ Customizing the data series
 
   bars: {
     barWidth: number
-  }
-  
-  deltas: {
-    show: boolean
-    lineColor: color (defaults to #333333)
-    markerWidth: number
-    markerColor: color (defaults to lineColor)
-  }
-  
-  hints: {
-    showColorBox: boolean
-    showSeriesLabel: boolean
-    labelFormatter: fn or null
-    hintFormatter: fn or null
-    backgroundColor: color or null (for auto-detect)
-    backgroundOpacity: number
-    borderColor: color (including 'transparent')
   }
 
   colors: [ color1, color2, ... ]
@@ -432,19 +369,14 @@ and Flot will happily draw each of them in turn, e.g.
     points: { show: true, fill: false }
   };
 
-"lineWidth" is the thickness of the line or outline in pixels.
+"lineWidth" is the thickness of the line or outline and "fill" is
+whether the shape should be filled. For lines, this produces area
+graphs. If "fillColor" is null (default), the color for the data
+series is used.
 
-"fill" is whether the shape should be filled. For lines, this produces
-area graphs. You can use "fillColor" to specify the color of the fill.
-If "fillColor" evaluates to false (default for everything except
-points), the fill color is auto-set to the color of the data series.
-You can adjust the opacity of the fill by setting fill to a number
-between 0 (fully transparent) and 1 (fully opaque).
-
-"barWidth" is the width of the bars in units of the x axis, contrary
-to most other measures that are specified in pixels. For instance, for
-time series the unit is milliseconds so 24 * 60 * 60 * 1000 produces
-bars with the width of a day.
+Note that the options that take numbers works in units of pixels, but
+"barWidth" is the width of the bars in units of the x axis (e.g. for
+time series it's in milliseconds).
 
 The "colors" array specifies a default color theme to get colors for
 the data series from. You can specify as many colors as you like, like
@@ -457,37 +389,6 @@ extra colors by lightening and darkening colors in the theme.
 
 "shadowSize" is the default size of shadows in pixels. Set it to 0 to
 remove shadows.
-
-"deltas" are a lot like enabling bars or showing a marker on the grid except
-that it is a bit more dynamic (giving a somewhat 'boxplot' feel), each data
-point can have a different 'base value' that the actual y-value will be 
-compared against. For example, perhaps you want to show the temperature each
-day and delta the datapoint against the yearly average on that day (or
-against another city, etc).
-
-"hints" are essentially tooltips that get formatted according to the format
-function assigned to either an individual series or to all hints. The function
-should return a string. You could define a formatter like so:
-
-    function myHintFormatter(x, y, data) {
-        return "<table><tr><td><strong>X</strong> =</td>" +
-               "<td>" + x + "</td></tr><tr>" +
-               "<td><strong>Y</strong> =</td>" +
-               "<td>" + y + "</td></tr></table>";
-    }
-    
-    // ... later
-    options.hints.hintFormatter = myHintFormatter;
-    
-You have access to the data which is the current series you're on, so you
-can use that however you like (get access to the data points, whether bars
-are enabled, what color the series is, and so on).
-     
-'hintFormatter' is the formatter for the actual datapoint. 'labelFormatter'
-is the formatter for the series label. 'showColorBox' is whether the color
-of the series will appear in the tooltip like it does in the legend.
-'showSeriesLabel' is whether the label of the series is inserted into the
-hint at all.
 
 
 Customizing the grid
@@ -502,11 +403,6 @@ Customizing the grid
     coloredAreasColor: color
     borderWidth: number
     clickable: boolean
-    hoverable: boolean
-    hoverColor: color or null for the same color as the series
-    hoverFill: color (default 'white')
-    hoverRadius: number or null for the same as the series (default 3)
-    mouseCatchingArea: number (default 15)
   }
 
 The grid is the thing with the two axes and a number of ticks. "color"
@@ -550,83 +446,24 @@ An example function might look like this:
 
 If you set "clickable" to true, the plot will listen for click events
 on the plot area and fire a "plotclick" event on the placeholder with
-an object { x: number, y: number } as parameter when one occurs. You can
-use it like this:
+an object { x: number, y: number } as parameter when one occurs. The
+returned coordinates will be in the unit of the plot (not in pixels).
+You can use it like this:
 
-    plot = $.plot($("#placeholder"), [ d ], { grid: { clickable: true } });
+    $.plot($("#placeholder"), [ d ], { grid: { clickable: true } });
 
-    $("#placeholder").bind("plotclick", function (e, result) {
-        // result.selected.x and result.selected.y are the datapoint matched
-        // and the raw click locations are in result.raw.x/y
+    $("#placeholder").bind("plotclick", function (e, pos) {
+        // the values are in pos.x and pos.y
     });
 
-If you set 'hoverable' to true, the plot will fire a hover event more or
-less continuously while your mouse travels. You can use it like this:
-
-    plot = $.plot($('#placeholder'), [d], { grid: { hoverable: true } } );
-    $('#placeholder').bind('plotmouseover', function(e, result) {
-        // result.selected contains the matched point and result.raw
-        // contains the raw mouse co-ordinates, like plotclick
-    } );
-    
-Both of these handlers can benefit from the new function 'highlightSelected'
-which take a datapoint of the form { x: xval, y: yval } and draws 'fake'
-points on the graph at that location. To do this you must specify some options
-for how you want it displayed, eg:
-
-    options.grid.mouseOverHighlight = "black";
-    options.grid.mouseOverFill = "red";
-    
-    // and then call
-    plot.highlightSelected( result.selected );
-    
-... will cause highlighted points (when hovering or clicking) to be drawn
-with black borders and a red center. If you specify a mouseOverHighlight
-but not mouseOverFill, the fill will default to white (just like regular
-points on the graph). Note that this also means that you could pass
-result.raw instead to draw a point 'in the middle of nowhere', or any other
-coordinates:
-
-    plot.highlightSelected({ x: result.selected.x, y: result.selected.y + 1 });
-
-Keep in mind one major limitation of the hovering system. It can be _very_
-slow with lots of data. To curb this problem, upon the initial generation
-of a graph the library will now sort the data, but only if hovering is enabled.
-If your data is already sorted (and you're sure) then you can change this
-behavior with options.sortData = false. Once the data is sorted we can do
-some simple math to limit our traversal of the data series, making the hovering
-calculations faster at the expense of 'loading time' (the sorting isn't too
-large of a hit, it seems).
-
-The matching area default is a 15px radius. If you need to change it you can
-override this setting with options.grid.mouseCatchingArea = pixels.
-
-If you're going to be highlighting hovered points and such then another useful
-option is 'hoverRadius' which determines the size of the 'fake' datapoint
-that gets drawn on the graph (think Google Analytics where hovered points
-'pop' a little and grow as you hover over them). If null, it will use the
-default series size (3px).
-
-If you need to mark some specific value on the x- or y-axis, you can define
-markers that will be drawn on the grid.
-
-    markers: [
-      { value: x-or-y-position,
-        width: thickness-of-marker,
-        color: color,
-        axis:  'x' (horizontal) or 'y' (vertical) },
-      ...
-    ]
-
-You can list as many markers as you like, they're drawn on top of the grid
-but under (before) any data series.
+Support for hover indications or for associating the clicks with any
+specific data is still forthcoming.
 
 
 Customizing the selection
 =========================
 
   selection: {
-    glob: boolean
     mode: null or "x" or "y" or "xy",
     color: color
   }
@@ -640,12 +477,9 @@ When selection support is enabled, a "selected" event will be emitted
 on the DOM element you passed into the plot function. The event
 handler gets one extra parameter with the area selected, like this:
 
-    placeholder.bind("selected", function(event, area) {
-        // area selected is area.x1 to area.x2 and area.y1 to area.y2
-    });
-    
-The 'glob' setting is only (currently) applicable when the mode is 'x'
-or 'xy'; it causes selections to snap to xaxis ticks.
+  placeholder.bind("selected", function(event, area) {
+    // area selected is area.x1 to area.x2 and area.y1 to area.y2
+  });
 
 
 Plot Members

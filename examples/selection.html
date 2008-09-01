@@ -4,8 +4,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Flot Examples</title>
     <link href="layout.css" rel="stylesheet" type="text/css"></link>
-    <!--[if IE]><script language="javascript" type="text/javascript" src="../excanvas.pack.js"></script><![endif]-->
-    <script language="javascript" type="text/javascript" src="../jquery.js"></script>
+    <!--[if IE]><script language="javascript" type="text/javascript" src="../excanvas.pack-min.js"></script><![endif]-->
+    <script language="javascript" type="text/javascript" src="../jquery-min.js"></script>
     <script language="javascript" type="text/javascript" src="../jquery.flot.js"></script>
  </head>
     <body>
@@ -75,7 +75,7 @@ $(function () {
         legend: { noColumns: 2 },
         xaxis: { tickDecimals: 0 },
         yaxis: { min: 0 },
-        selection: { mode: "x", snapToTicks: true }
+        selection: { mode: "x" }
     };
 
     var placeholder = $("#placeholder");
